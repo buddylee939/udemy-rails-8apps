@@ -158,4 +158,88 @@ end
 
 ## 26. edit/update and destroy docs
 
+- in docs controller, update the update and destroy
+
+```
+  def update
+    if @doc.update(doc_params)
+      redirect_to @doc
+    else
+      render 'edit'
+    end
+  end
+  def destroy
+    @doc.destroy
+    redirect_to docs_path
+  end  
+```
+
+- update the show page with the links
+
+```
+= link_to 'All Docs', docs_path
+= link_to 'Fix Doc', edit_doc_path(@doc)
+= link_to 'Trash It', doc_path(@doc), method: :delete, data: { confirm: 'Are you sure?' }
+
+```
+
+- create the docs/edit and add the code
+
+```
+%h1 Edit Doc 
+
+= render 'form'
+
+= link_to 'Cancel', doc_path
+```
+
+- in the index add the create new doc link
+
+```
+= link_to 'Create Doc', new_doc_path
+```
+
+## 27. user model w/ associations
+
+- using devise: rails g devise:install
+- do the devise to dos, mailer, flash messages, views
+- rails g devise:views
+- rails g devise User
+- rails db:migrate
+- create a user in browser
+- linking user with docs
+- in terminal: rails g migration add_user_id_to_docs user_id:integer
+- rails db:migrate
+- update doc.rb model
+
+```
+belongs_to :user
+```
+
+- update user.rb
+
+```
+has_many :docs
+```
+
+- in doc controller, update the new action
+
+```
+  def new
+    @doc = current_user.docs.build
+  end
+
+  def create
+    @doc =  current_user.docs.build(doc_params)
+
+    if @doc.save
+      redirect_to @doc
+    else
+      render 'new'
+    end
+  end
+```
+
+- go to browser and create a doc
+- in rails console check last doc and it should have user
 - 
