@@ -1,5 +1,5 @@
-#notes {
-  .note {
+#docs {
+  .doc {
     background: $dark_gray;
     width: 30%;
     min-height: 150px;
@@ -24,7 +24,7 @@
   }
 }
 
-#note_show {
+#doc_show {
   .title {
     @include bold_font;
     font-size: 2.5rem;

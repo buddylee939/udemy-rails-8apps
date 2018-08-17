@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+</head>
+<body>
+<p><link rel="stylesheet" href="style.css"></p>
+
+<h1 id="udemyrails8apps-cabinet">Udemy Rails 8 Apps - CABINET</h1>
+
+<h2 id="practiceround1-videos18and19">practice round 1 - videos 18 and 19</h2>
+
+<ul>
+<li>in terminal, in the directory</li>
+<li>rails new Blog</li>
+<li>cd Blog</li>
+<li>rails s</li>
+<li>rails g model Post title:string body:text (always singular and capital)</li>
+<li>rails db:migrate</li>
+<li>rails g controller Posts(plural) index new show destroy</li>
+</ul>
+
+<h2 id="section9-filecabinetapplikeevernote">Section 9 - filecabinet app (like evernote)</h2>
+
+<ul>
+<li>rails new Cabinet</li>
+<li>cd Cabinet, git init</li>
+<li>git add ., git commit -m &#8220;Initial commit&#8221;</li>
+<li>rails g controller welcome index</li>
+<li>in routes: root &#8216;welcome#index&#8217;</li>
+</ul>
+
+<h2 id="doccontrollermodelandmoreroutes">doc controller, model and more routes</h2>
+
+<ul>
+<li>add the gems haml, simple_form, devise</li>
+<li>bundle</li>
+<li>rename welcome/index.html.erb to index.html.haml</li>
+<li>replace the code:</li>
+</ul>
+
+<pre><code>%h1 Voila this is the place holder
+</code></pre>
+
+<ul>
+<li>rails g model Doc title:string content:text</li>
+<li>bundle</li>
+<li>rails db:migrate</li>
+<li>rails g controller Docs</li>
+<li>in routes: resources :docs</li>
+<li>in docs controller add:</li>
+</ul>
+
+<pre><code>class DocsController &lt; ApplicationController
+  def index
+  end
+
+  def show
+  end
+
+  def new
+  end
+
+  def create
+  end
+
+  def edit
+  end
+
+  def update
+  end
+
+  def destroy
+  end
+
+  private
+
+    def find_doc
+    end
+
+    def doc_params
+    end
+end
+
+</code></pre>
+
+<h2 id="24.firstviewfilefordocmodel">24. first view file for doc model</h2>
+
+<ul>
+<li>create the file docs/new.html.haml</li>
+<li>create file docs/_form.html.haml</li>
+<li>in new file add</li>
+</ul>
+
+<pre><code>%h1 New Doc
+</code></pre>
+
+<ul>
+<li>setting up simple form</li>
+<li>in terminal: rails g simple_form:install</li>
+<li>restart server</li>
+<li>in form partial add</li>
+</ul>
+
+<pre><code>= simple_form_for @doc do |f|
+  = f.input :title
+  = f.input :content
+  = f.button :submit
+</code></pre>
+
+<ul>
+<li>in docs/new add code</li>
+</ul>
+
+<pre><code>%h1 New Doc
+
+= render 'form'
+</code></pre>
+
+<ul>
+<li>in docs controller, update new, create and doc_params</li>
+</ul>
+
+<pre><code>  def new
+    @doc = Doc.new
+  end
+
+  def create
+    @doc = Doc.new(doc_params)
+
+    if @doc.save
+      redirect_to @doc
+    else
+      render 'new'
+    end
+  end
+  def doc_params
+    params.require(:doc).permit(:title, :content)
+  end  
+</code></pre>
+
+<h2 id="25.displaysingleandalldocuments">25. display single and all documents</h2>
+
+<ul>
+<li>create the file docs/show.html.haml and add the code</li>
+</ul>
+
+<pre><code>%h1= @doc.title
+%p= @doc.content
+</code></pre>
+
+<ul>
+<li>in doc controller, update the find_doc and add before action up top</li>
+</ul>
+
+<pre><code>before_action :find_doc, only: [:show, :edit, :update, :destroy]
+def find_doc
+  @doc = Doc.find(params[:id])
+end
+</code></pre>
+
+<ul>
+<li>go to localhost docs/new create a new doc</li>
+<li>create the file docs/index.html.haml add the code</li>
+</ul>
+
+<pre><code>- @docs.each do |doc|
+  %h2= link_to doc.title, doc
+  %p= time_ago_in_words(doc.created_at)
+  %p= truncate(doc.content, length: 50)
+</code></pre>
+
+<ul>
+<li>update new action in docs controller</li>
+</ul>
+
+<pre><code>  def index
+    @docs = Doc.all.order(&quot;created_at DESC&quot;)
+  end
+</code></pre>
+
+<h2 id="26.editupdateanddestroydocs">26. edit/update and destroy docs</h2>
+
+<ul>
+<li>in docs controller, update the update and destroy</li>
+</ul>
+
+<pre><code>  def update
+    if @doc.update(doc_params)
+      redirect_to @doc
+    else
+      render 'edit'
+    end
+  end
+  def destroy
+    @doc.destroy
+    redirect_to docs_path
+  end  
+</code></pre>
+
+<ul>
+<li>update the show page with the links</li>
+</ul>
+
+<pre><code>= link_to 'All Docs', docs_path
+= link_to 'Fix Doc', edit_doc_path(@doc)
+= link_to 'Trash It', doc_path(@doc), method: :delete, data: { confirm: 'Are you sure?' }
+
+</code></pre>
+
+<ul>
+<li>create the docs/edit and add the code</li>
+</ul>
+
+<pre><code>%h1 Edit Doc 
+
+= render 'form'
+
+= link_to 'Cancel', doc_path
+</code></pre>
+
+<ul>
+<li>in the index add the create new doc link</li>
+</ul>
+
+<pre><code>= link_to 'Create Doc', new_doc_path
+</code></pre>
+
+<h2 id="27.usermodelwassociations">27. user model w/ associations</h2>
+
+<ul>
+<li>using devise: rails g devise:install</li>
+<li>do the devise to dos, mailer, flash messages, views</li>
+<li>rails g devise:views</li>
+<li>rails g devise User</li>
+<li>rails db:migrate</li>
+<li>create a user in browser</li>
+<li>linking user with docs</li>
+<li>in terminal: rails g migration add_user_id_to_docs user_id:integer</li>
+<li>rails db:migrate</li>
+<li>update doc.rb model</li>
+</ul>
+
+<pre><code>belongs_to :user
+</code></pre>
+
+<ul>
+<li>update user.rb</li>
+</ul>
+
+<pre><code>has_many :docs
+</code></pre>
+
+<ul>
+<li>in doc controller, update the new action</li>
+</ul>
+
+<pre><code>  def new
+    @doc = current_user.docs.build
+  end
+
+  def create
+    @doc =  current_user.docs.build(doc_params)
+
+    if @doc.save
+      redirect_to @doc
+    else
+      render 'new'
+    end
+  end
+</code></pre>
+
+<ul>
+<li>go to browser and create a doc</li>
+<li>in rails console check last doc and it should have user</li>
+</ul>
+
+<h2 id="28.documentrestrictionsvisibleonlytocreatorstylesheets">28. document restrictions (visible only to creator) &amp; stylesheets</h2>
+
+<ul>
+<li>displaying only the docs created by the current user on the index page</li>
+<li>update the code in doc controller, the index action to be</li>
+</ul>
+
+<pre><code>  def index
+    @docs = Doc.where(user_id: current_user)
+  end
+</code></pre>
+
+<ul>
+<li>create a second user and test</li>
+</ul>
+
+<h3 id="onceuserloggedintheirhomepageshouldbetheirdocsindexpagenotthegeneralwelcomeindexsalespage">once user logged in their homepage should be their docs index page not the general welcome index sales page</h3>
+
+<ul>
+<li>in the routes file we need 2 root directories one for authenticated and one for non-logged in users</li>
+<li>update the routes to be:</li>
+</ul>
+
+<pre><code>Rails.application.routes.draw do
+  devise_for :users
+  resources :docs
+
+  authenticated :user do
+    root &quot;docs#index&quot;, as: &quot;authenticated_root&quot;
+  end
+  root 'welcome#index'
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+end
+</code></pre>
+
+<ul>
+<li>styling the site</li>
+<li>in app.css rename to .scss and add the code</li>
+</ul>
+
+<pre><code>@import 'normalize';
+@import 'global';
+@import 'docs';
+@import 'welcome';
+</code></pre>
+
+<ul>
+<li>create the files normalize and global</li>
+<li>get normalize from the net</li>
+</ul>
+
+<h2 id="29.stylingandnavigation">29. styling and navigation</h2>
+
+<ul>
+<li>add the stylesheets from the repo: https://github.com/CrashLearner/EvernoteClone</li>
+<li>update the views/layouts/app to haml</li>
+</ul>
+
+<pre><code>!!!
+%html
+%head
+  %title EVEREVERNOTE | Your Life's Work!
+  = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' =&gt; true 
+  = javascript_include_tag 'application', 'data-turbolinks-track' =&gt; true 
+  = csrf_meta_tags
+%body
+  %header
+    .header_inner
+      = link_to &quot;EVEREVERNOTE&quot;, root_path, id: &quot;logo&quot;
+      %nav
+        - if user_signed_in?
+          = link_to &quot;New Note&quot;, new_note_path
+          = link_to &quot;Sign Out&quot;, destroy_user_session_path, method: :delete 
+
+        - else
+          = link_to &quot;Log In&quot;, new_user_session_path
+  %p.notice= notice
+  %p.alert= alert
+
+  = yield
+</code></pre>
+
+<ul>
+<li>update the welcome/index to be</li>
+</ul>
+
+<pre><code>#banner
+  .banner_content
+    %h1 EverEverNote
+    %p Your life's Work!
+    %button= link_to &quot;Sign Up&quot;, new_user_registration_path
+#testimonial
+  .wrapper
+    %p.quote &quot;I keep all our important documents with EverEverNote.&quot;
+    %p.name - President Obama
+#callouts
+  .callout_inner
+    .wrapper
+      .callout
+        %h2 Journal
+        Viral Echo Park Intelligentsia tattooed, craft beer organic authentic polaroid tousled mlkshk church-key. Fanny pack Banksy vegan  authentic Helvetica.
+
+      .callout
+        %h2 Notes
+        Viral Echo Park Intelligentsia tattooed, craft beer organic authentic polaroid tousled mlkshk church-key. Fanny pack Banksy vegan  authentic Helvetica.
+
+      .callout
+        %h2 Epic
+        Viral Echo Park Intelligentsia tattooed, craft beer organic authentic polaroid tousled mlkshk church-key. Fanny pack Banksy vegan  authentic Helvetica.
+
+#bottom_cta
+  .wrapper
+    %h2 Store All Your Notes!
+    %p Be Different, Join the Elite!
+    %button= link_to &quot;Start Here!!!&quot;, new_user_registration_path
+
+%footer
+  %p &amp;copy; CrashLearner
+</code></pre>
+
+<ul>
+<li>for the background images in the css, I did</li>
+</ul>
+
+<pre><code>background-image: image-url('callout_background.jpg'); 
+</code></pre>
+
+<h2 id="30.documentindexpagestyling">30. document index page styling</h2>
+
+<ul>
+<li>update the docs/index page with the ids and classes</li>
+</ul>
+
+<pre><code>.wrapper_with_padding
+  #docs.clearfix
+    - unless @docs.blank?    
+      - @docs.each do |doc|
+        %a{ href: (url_for [doc])}
+          .doc
+            %p.title= doc.title
+            %p.date= time_ago_in_words(doc.created_at)
+            %p.content= truncate(doc.content, length: 50)
+    - else
+      %h2 Create Doc!
+      %p Start Creating Documents and Organizing your life!
+      %button= link_to &quot;Create Doc&quot;, new_doc_path
+</code></pre>
+
+<h2 id="31.documentshowpagestyling">31. document show page styling</h2>
+
+<ul>
+<li>update the docs/show page</li>
+</ul>
+
+<pre><code>.wrapper_with_padding
+  #doc_show
+    %h1.title= @doc.title
+    %p= simple_format(@doc.content)
+    
+    .buttons
+      = link_to 'Fix Doc', edit_doc_path(@doc), class: 'button'
+      = link_to 'Trash It', doc_path(@doc), method: :delete, data: { confirm: 'Are you sure?' }, class: 'button'
+</code></pre>
+
+<h2 id="32.documentneweditloginsignuppagesstyling">32. document new, edit, log in/sign up pages styling</h2>
+
+<ul>
+<li>update docs/new</li>
+</ul>
+
+<pre><code>.wrapper_with_padding
+  %h1 New Doc
+
+  = render 'form'
+</code></pre>
+
+<ul>
+<li>update docs/edit</li>
+</ul>
+
+<pre><code>.wrapper_with_padding
+  %h1 Edit Doc 
+
+  = render 'form'
+
+  = link_to 'Cancel', doc_path
+</code></pre>
+
+<ul>
+<li>update the form partial</li>
+</ul>
+
+<pre><code>= simple_form_for @doc do |f|
+  = f.input :title
+  = f.input :content
+  = f.button :submit, class: 'button'
+</code></pre>
+
+<ul>
+<li>update devise/registrations/new</li>
+</ul>
+
+<pre><code>&lt;div class=&quot;wrapper_with_padding&quot;&gt;
+  &lt;h2&gt;Sign up&lt;/h2&gt;
+
+  &lt;%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %&gt;
+    &lt;%= f.error_notification %&gt;
+
+    &lt;div class=&quot;form-inputs&quot;&gt;
+      &lt;%= f.input :email,
+                  required: true,
+                  autofocus: true ,
+                  input_html: { autocomplete: &quot;email&quot; }%&gt;
+      &lt;%= f.input :password,
+                  required: true,
+                  hint: (&quot;#{@minimum_password_length} characters minimum&quot; if @minimum_password_length),
+                  input_html: { autocomplete: &quot;new-password&quot; } %&gt;
+      &lt;%= f.input :password_confirmation,
+                  required: true,
+                  input_html: { autocomplete: &quot;new-password&quot; } %&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;form-actions&quot;&gt;
+      &lt;%= f.button :submit, &quot;Sign up&quot;, class: 'button' %&gt;
+    &lt;/div&gt;
+  &lt;% end %&gt;
+
+  &lt;%= render &quot;devise/shared/links&quot; %&gt;  
+&lt;/div&gt;
+</code></pre>
+
+<ul>
+<li>update devise/sessions/new</li>
+</ul>
+
+<pre><code>&lt;div class=&quot;wrapper_with_padding&quot;&gt;
+  &lt;h2&gt;Log in&lt;/h2&gt;
+
+  &lt;%= simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %&gt;
+    &lt;div class=&quot;form-inputs&quot;&gt;
+      &lt;%= f.input :email,
+                  required: false,
+                  autofocus: true,
+                  input_html: { autocomplete: &quot;email&quot; } %&gt;
+      &lt;%= f.input :password,
+                  required: false,
+                  input_html: { autocomplete: &quot;current-password&quot; } %&gt;
+      &lt;%= f.input :remember_me, as: :boolean if devise_mapping.rememberable? %&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;form-actions&quot;&gt;
+      &lt;%= f.button :submit, &quot;Log in&quot; %&gt;
+    &lt;/div&gt;
+  &lt;% end %&gt;
+
+  &lt;%= render &quot;devise/shared/links&quot; %&gt;
+  
+&lt;/div&gt;
+</code></pre>
+
+<ul>
+<li>add the wrapper class to devise/registrations/edit</li>
+</ul>
+
+<h1 id="theend">The End</h1>
+
+</body>
+</html>

@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="style.css">
 
-# Udemy Rails 8 Apps
+# Udemy Rails 8 Apps - CABINET
 
 ## practice round 1 - videos 18 and 19
 - in terminal, in the directory
@@ -360,4 +360,133 @@ end
 background-image: image-url('callout_background.jpg'); 
 ```
 
-- 
+## 30. document index page styling
+
+- update the docs/index page with the ids and classes
+
+```
+.wrapper_with_padding
+  #docs.clearfix
+    - unless @docs.blank?    
+      - @docs.each do |doc|
+        %a{ href: (url_for [doc])}
+          .doc
+            %p.title= doc.title
+            %p.date= time_ago_in_words(doc.created_at)
+            %p.content= truncate(doc.content, length: 50)
+    - else
+      %h2 Create Doc!
+      %p Start Creating Documents and Organizing your life!
+      %button= link_to "Create Doc", new_doc_path
+```
+
+## 31. document show page styling
+
+- update the docs/show page
+
+```
+.wrapper_with_padding
+  #doc_show
+    %h1.title= @doc.title
+    %p= simple_format(@doc.content)
+    
+    .buttons
+      = link_to 'Fix Doc', edit_doc_path(@doc), class: 'button'
+      = link_to 'Trash It', doc_path(@doc), method: :delete, data: { confirm: 'Are you sure?' }, class: 'button'
+```
+
+## 32. document new, edit, log in/sign up pages styling
+
+- update docs/new
+
+```
+.wrapper_with_padding
+  %h1 New Doc
+
+  = render 'form'
+```
+
+- update docs/edit
+
+```
+.wrapper_with_padding
+  %h1 Edit Doc 
+
+  = render 'form'
+
+  = link_to 'Cancel', doc_path
+```
+
+- update the form partial
+
+```
+= simple_form_for @doc do |f|
+  = f.input :title
+  = f.input :content
+  = f.button :submit, class: 'button'
+```
+
+- update devise/registrations/new
+
+```
+<div class="wrapper_with_padding">
+  <h2>Sign up</h2>
+
+  <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+    <%= f.error_notification %>
+
+    <div class="form-inputs">
+      <%= f.input :email,
+                  required: true,
+                  autofocus: true ,
+                  input_html: { autocomplete: "email" }%>
+      <%= f.input :password,
+                  required: true,
+                  hint: ("#{@minimum_password_length} characters minimum" if @minimum_password_length),
+                  input_html: { autocomplete: "new-password" } %>
+      <%= f.input :password_confirmation,
+                  required: true,
+                  input_html: { autocomplete: "new-password" } %>
+    </div>
+
+    <div class="form-actions">
+      <%= f.button :submit, "Sign up", class: 'button' %>
+    </div>
+  <% end %>
+
+  <%= render "devise/shared/links" %>  
+</div>
+```
+
+- update devise/sessions/new
+
+```
+<div class="wrapper_with_padding">
+  <h2>Log in</h2>
+
+  <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+    <div class="form-inputs">
+      <%= f.input :email,
+                  required: false,
+                  autofocus: true,
+                  input_html: { autocomplete: "email" } %>
+      <%= f.input :password,
+                  required: false,
+                  input_html: { autocomplete: "current-password" } %>
+      <%= f.input :remember_me, as: :boolean if devise_mapping.rememberable? %>
+    </div>
+
+    <div class="form-actions">
+      <%= f.button :submit, "Log in" %>
+    </div>
+  <% end %>
+
+  <%= render "devise/shared/links" %>
+  
+</div>
+```
+
+- add the wrapper class to devise/registrations/edit
+
+# The End
+
