@@ -289,4 +289,75 @@ end
 
 ## 29. styling and navigation
 
+- add the stylesheets from the repo: https://github.com/CrashLearner/EvernoteClone
+- update the views/layouts/app to haml
+
+```
+!!!
+%html
+%head
+  %title EVEREVERNOTE | Your Life's Work!
+  = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true 
+  = javascript_include_tag 'application', 'data-turbolinks-track' => true 
+  = csrf_meta_tags
+%body
+  %header
+    .header_inner
+      = link_to "EVEREVERNOTE", root_path, id: "logo"
+      %nav
+        - if user_signed_in?
+          = link_to "New Note", new_note_path
+          = link_to "Sign Out", destroy_user_session_path, method: :delete 
+
+        - else
+          = link_to "Log In", new_user_session_path
+  %p.notice= notice
+  %p.alert= alert
+
+  = yield
+```
+
+- update the welcome/index to be
+
+```
+#banner
+  .banner_content
+    %h1 EverEverNote
+    %p Your life's Work!
+    %button= link_to "Sign Up", new_user_registration_path
+#testimonial
+  .wrapper
+    %p.quote "I keep all our important documents with EverEverNote."
+    %p.name - President Obama
+#callouts
+  .callout_inner
+    .wrapper
+      .callout
+        %h2 Journal
+        Viral Echo Park Intelligentsia tattooed, craft beer organic authentic polaroid tousled mlkshk church-key. Fanny pack Banksy vegan  authentic Helvetica.
+
+      .callout
+        %h2 Notes
+        Viral Echo Park Intelligentsia tattooed, craft beer organic authentic polaroid tousled mlkshk church-key. Fanny pack Banksy vegan  authentic Helvetica.
+
+      .callout
+        %h2 Epic
+        Viral Echo Park Intelligentsia tattooed, craft beer organic authentic polaroid tousled mlkshk church-key. Fanny pack Banksy vegan  authentic Helvetica.
+
+#bottom_cta
+  .wrapper
+    %h2 Store All Your Notes!
+    %p Be Different, Join the Elite!
+    %button= link_to "Start Here!!!", new_user_registration_path
+
+%footer
+  %p &copy; CrashLearner
+```
+
+- for the background images in the css, I did
+
+```
+background-image: image-url('callout_background.jpg'); 
+```
+
 - 
