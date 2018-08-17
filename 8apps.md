@@ -242,4 +242,51 @@ has_many :docs
 
 - go to browser and create a doc
 - in rails console check last doc and it should have user
+
+## 28. document restrictions (visible only to creator) & stylesheets
+
+- displaying only the docs created by the current user on the index page
+- update the code in doc controller, the index action to be
+
+```
+  def index
+    @docs = Doc.where(user_id: current_user)
+  end
+```
+
+- create a second user and test
+
+### once user logged in their homepage should be their docs index page not the general welcome index sales page
+
+- in the routes file we need 2 root directories one for authenticated and one for non-logged in users
+- update the routes to be:
+
+```
+Rails.application.routes.draw do
+  devise_for :users
+  resources :docs
+
+  authenticated :user do
+    root "docs#index", as: "authenticated_root"
+  end
+  root 'welcome#index'
+  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+end
+```
+
+- styling the site
+- in app.css rename to .scss and add the code
+
+```
+@import 'normalize';
+@import 'global';
+@import 'docs';
+@import 'welcome';
+```
+
+- create the files normalize and global
+- get normalize from the net
+
+## 29. styling and navigation
+
 - 
