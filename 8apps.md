@@ -71,4 +71,91 @@ end
 
 ## 24. first view file for doc model
 
+- create the file docs/new.html.haml
+- create file docs/_form.html.haml
+- in new file add
+
+```
+%h1 New Doc
+```
+
+- setting up simple form
+- in terminal: rails g simple_form:install
+- restart server
+- in form partial add
+
+```
+= simple_form_for @doc do |f|
+  = f.input :title
+  = f.input :content
+  = f.button :submit
+```
+
+- in docs/new add code
+
+```
+%h1 New Doc
+
+= render 'form'
+```
+
+- in docs controller, update new, create and doc_params
+
+```
+  def new
+    @doc = Doc.new
+  end
+
+  def create
+    @doc = Doc.new(doc_params)
+
+    if @doc.save
+      redirect_to @doc
+    else
+      render 'new'
+    end
+  end
+  def doc_params
+    params.require(:doc).permit(:title, :content)
+  end  
+```
+
+## 25. display single and all documents
+
+- create the file docs/show.html.haml and add the code
+
+```
+%h1= @doc.title
+%p= @doc.content
+```
+
+- in doc controller, update the find_doc and add before action up top
+
+```
+before_action :find_doc, only: [:show, :edit, :update, :destroy]
+def find_doc
+  @doc = Doc.find(params[:id])
+end
+```
+
+- go to localhost docs/new create a new doc
+- create the file docs/index.html.haml add the code
+
+```
+- @docs.each do |doc|
+  %h2= link_to doc.title, doc
+  %p= time_ago_in_words(doc.created_at)
+  %p= truncate(doc.content, length: 50)
+```
+
+- update new action in docs controller
+
+```
+  def index
+    @docs = Doc.all.order("created_at DESC")
+  end
+```
+
+## 26. edit/update and destroy docs
+
 - 
