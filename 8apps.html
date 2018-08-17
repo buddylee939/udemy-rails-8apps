@@ -11,10 +11,84 @@
 <h2 id="practiceround1-videos18and19">practice round 1 - videos 18 and 19</h2>
 
 <ul>
-<li><p>in terminal, in the directory</p></li>
+<li>in terminal, in the directory</li>
+<li>rails new Blog</li>
+<li>cd Blog</li>
+<li>rails s</li>
+<li>rails g model Post title:string body:text (always singular and capital)</li>
+<li>rails db:migrate</li>
+<li>rails g controller Posts(plural) index new show destroy</li>
 </ul>
 
-<h2 id="-railsnewblog">- rails new Blog</h2>
+<h2 id="section9-filecabinetapplikeevernote">Section 9 - filecabinet app (like evernote)</h2>
+
+<ul>
+<li>rails new Cabinet</li>
+<li>cd Cabinet, git init</li>
+<li>git add ., git commit -m &#8220;Initial commit&#8221;</li>
+<li>rails g controller welcome index</li>
+<li>in routes: root &#8216;welcome#index&#8217;</li>
+</ul>
+
+<h2 id="doccontrollermodelandmoreroutes">doc controller, model and more routes</h2>
+
+<ul>
+<li>add the gems haml, simple_form, devise</li>
+<li>bundle</li>
+<li>rename welcome/index.html.erb to index.html.haml</li>
+<li>replace the code:</li>
+</ul>
+
+<pre><code>%h1 Voila this is the place holder
+</code></pre>
+
+<ul>
+<li>rails g model Doc title:string content:text</li>
+<li>bundle</li>
+<li>rails db:migrate</li>
+<li>rails g controller Docs</li>
+<li>in routes: resources :docs</li>
+<li>in docs controller add:</li>
+</ul>
+
+<pre><code>class DocsController &lt; ApplicationController
+  def index
+  end
+
+  def show
+  end
+
+  def new
+  end
+
+  def create
+  end
+
+  def edit
+  end
+
+  def update
+  end
+
+  def destroy
+  end
+
+  private
+
+    def find_doc
+    end
+
+    def doc_params
+    end
+end
+
+</code></pre>
+
+<h2 id="24.firstviewfilefordocmodel">24. first view file for doc model</h2>
+
+<ul>
+<li></li>
+</ul>
 
 </body>
 </html>

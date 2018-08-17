@@ -69,4 +69,6 @@ end
 
 ```
 
-- 	
+## 24. first view file for doc model
+
+- 
