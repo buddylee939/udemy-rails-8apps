@@ -16,10 +16,12 @@
         <li class="category"><%= link_to 'Tumblr', root_path %></li>
         <li><%= link_to 'Posts', root_path %></li>
         <li><%= link_to 'About', about_path %></li>
-      </ul>
+        <hr>
       <% if !user_signed_in? %>
-        <p class="sign_in"><%= link_to 'User Login', new_user_session_path %></p>
+        <li class="sign_ins"><%= link_to 'User Sign Up', new_user_registration_path %></li>
+        <li class="sign_ins"><%= link_to 'User Login', new_user_session_path %></li>
       <% end %>        
+      </ul>
     </div>
 
     <div id="main_content">
@@ -34,6 +36,7 @@
 
         <% if user_signed_in? %>        
           <div class="buttons">
+            <%= link_to current_user.email, edit_user_registration_path %>
             <button class="button"><%= link_to 'Make Post', new_post_path %></button>
             <button class="button"><%= link_to 'Sign Out', destroy_user_session_path, method: :delete %></button>
           </div>
