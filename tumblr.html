@@ -8,5 +8,613 @@
 
 <h1 id="udemyrails8apps-tumblr">Udemy Rails 8 Apps - TUMBLR</h1>
 
+<h2 id="35.createpostmodelcontroller">35. create post model, controller</h2>
+
+<ul>
+<li>rails new tumblr</li>
+<li>cd tumblr</li>
+<li>rails generate controller posts</li>
+<li>in posts controller add the index action and new action</li>
+<li>in routes add: resources :posts, root &#8220;posts#index&#8221;</li>
+<li>create the file posts/index.html.erb</li>
+<li>create the posts/new file and add the form code:</li>
+</ul>
+
+<pre><code>&lt;h1&gt;Make Something&lt;/h1&gt;
+
+&lt;%= form_for :post, url: posts_path do |f| %&gt;
+  &lt;p&gt;
+    &lt;%= f.label :title %&gt; &lt;br&gt;
+    &lt;%= f.text_field :title %&gt;
+  &lt;/p&gt;
+  &lt;p&gt;
+    &lt;%= f.label :body %&gt; &lt;br&gt;
+    &lt;%= f.text_area :body %&gt;
+  &lt;/p&gt;
+  &lt;p&gt;
+    &lt;%= f.submit %&gt;
+  &lt;/p&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<ul>
+<li>rails g model Post title:string body:text</li>
+<li>rails db:migrate</li>
+</ul>
+
+<h2 id="36.abilitytocreateandshowposts">36. ability to create and show posts</h2>
+
+<ul>
+<li>in post controller, add the new, create and private actions, and before action</li>
+</ul>
+
+<pre><code>before_action :find_post, only: [:show, :edit, :update, :destroy]
+  def new
+  end
+
+  def create
+    @post = Post.new(post_params)
+
+    if @post.save
+      redirect_to @post
+    else
+      render 'new'
+    end
+  end
+
+  private
+
+    def find_doc
+      @doc = Doc.find(params[:id])
+    end
+
+    def doc_params
+      params.require(:doc).permit(:title, :content)
+    end
+</code></pre>
+
+<ul>
+<li>create the posts/show page with the code</li>
+</ul>
+
+<pre><code>&lt;h1 class=&quot;title&quot;&gt;
+  &lt;%= @post.title %&gt;
+&lt;/h1&gt;
+
+&lt;p class=&quot;date&quot;&gt;
+  Submitted &lt;%= time_ago_in_words(@post.created_at) %&gt; ago
+&lt;/p&gt;
+
+&lt;p class=&quot;body&quot;&gt;
+  &lt;%= @post.body %&gt;
+&lt;/p&gt;
+</code></pre>
+
+<ul>
+<li>refresh and test it out</li>
+</ul>
+
+<h2 id="37.displayallpostsinsequence">37. display all posts in sequence</h2>
+
+<ul>
+<li>in posts controller, update the index action</li>
+</ul>
+
+<pre><code>  def index
+    @posts = Post.all.order('created_at DESC')
+  end
+</code></pre>
+
+<ul>
+<li>in the posts/index add the code</li>
+</ul>
+
+<pre><code>&lt;% @posts.each do |post| %&gt;
+  &lt;div class=&quot;post_wrapper&quot;&gt;
+    &lt;h2 class=&quot;title&quot;&gt;&lt;%= link_to post.title, post %&gt;&lt;/h2&gt;
+    &lt;p class=&quot;date&quot;&gt;&lt;%= time_ago_in_words(post.created_at) %&gt; ago&lt;/p&gt;
+  &lt;/div&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<h2 id="38.navigationstylingandstructureofapplication">38. navigation, styling, and structure of application</h2>
+
+<ul>
+<li>rename app.css to scss</li>
+<li>import styling from https://github.com/CrashLearner/TumblrSourceCode</li>
+<li>add the normalize.css</li>
+<li>in the layouts/app add the google font</li>
+</ul>
+
+<pre><code>&lt;%= stylesheet_link_tag 'application', 'http://fonts.googleapis.com/css?family=Raleway:400,700' %&gt;
+</code></pre>
+
+<ul>
+<li>add the favicon</li>
+</ul>
+
+<pre><code>&lt;%= favicon_link_tag 'favicon.ico' %&gt;
+</code></pre>
+
+<ul>
+<li>add the favicon.ico in assets/images</li>
+<li>update the layout/app to be</li>
+</ul>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;Tumblr&lt;/title&gt;
+    &lt;%= csrf_meta_tags %&gt;
+    &lt;%= csp_meta_tag %&gt;
+    &lt;%= stylesheet_link_tag 'application', 'http://fonts.googleapis.com/css?family=Raleway:400,700' %&gt;
+    &lt;%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %&gt;
+    &lt;%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %&gt;
+    &lt;%= favicon_link_tag 'favicon.ico' %&gt;
+  &lt;/head&gt;
+
+  &lt;body&gt;
+    &lt;div id=&quot;sidebar&quot;&gt;
+      &lt;ul&gt;
+        &lt;li class=&quot;category&quot;&gt;&lt;%= link_to 'Tumblr', root_path %&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;%= link_to 'Posts', root_path %&gt;&lt;/li&gt;
+        &lt;li&gt;About&lt;/li&gt;
+      &lt;/ul&gt;
+      &lt;p class=&quot;sign_in&quot;&gt;User Login&lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;div id=&quot;main_content&quot;&gt;
+      &lt;div id=&quot;header&quot;&gt;
+        &lt;p&gt;Post Feed&lt;/p&gt;
+        &lt;div class=&quot;buttons&quot;&gt;
+          &lt;button class=&quot;button&quot;&gt;&lt;%= link_to 'Make Post', new_post_path %&gt;&lt;/button&gt;
+          &lt;button class=&quot;button&quot;&gt;Log Out&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;% flash.each do |name, msg| %&gt;
+        &lt;%= content_tag(:div, msg, class: 'alert') %&gt;
+      &lt;% end %&gt;
+      &lt;%= yield %&gt;
+    &lt;/div&gt;
+
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<ul>
+<li>update the posts/new</li>
+</ul>
+
+<pre><code>&lt;div id=&quot;page_wrapper&quot;&gt;
+  &lt;h1&gt;Make Something&lt;/h1&gt;
+
+  &lt;%= form_for :post, url: posts_path do |f| %&gt;
+    &lt;p&gt;
+      &lt;%= f.label :title %&gt; &lt;br&gt;
+      &lt;%= f.text_field :title %&gt;
+    &lt;/p&gt;
+    &lt;p&gt;
+      &lt;%= f.label :body %&gt; &lt;br&gt;
+      &lt;%= f.text_area :body %&gt;
+    &lt;/p&gt;
+    &lt;p&gt;
+      &lt;%= f.submit %&gt;
+    &lt;/p&gt;
+  &lt;% end %&gt;  
+&lt;/div&gt;
+
+</code></pre>
+
+<ul>
+<li>update the show</li>
+</ul>
+
+<pre><code>&lt;div id=&quot;post_content&quot;&gt;
+  &lt;h1 class=&quot;title&quot;&gt;
+    &lt;%= @post.title %&gt;
+  &lt;/h1&gt;
+
+  &lt;p class=&quot;date&quot;&gt;
+    Submitted &lt;%= time_ago_in_words(@post.created_at) %&gt; ago
+  &lt;/p&gt;
+
+  &lt;p class=&quot;body&quot;&gt;
+    &lt;%= @post.body %&gt;
+  &lt;/p&gt;  
+&lt;/div&gt;
+</code></pre>
+
+<h2 id="39.addvalidationtopostsi.e.setpostparameters">39. add validation to posts (i.e. set post parameters)</h2>
+
+<ul>
+<li>update post.rb model</li>
+</ul>
+
+<pre><code>class Post &lt; ApplicationRecord
+  validates :title, presence: true, length: { minimum: 5 }
+  validates :body, presence: true
+end
+</code></pre>
+
+<ul>
+<li>update new action in post controller</li>
+</ul>
+
+<pre><code>  def new
+    @post = Post.new
+  end
+</code></pre>
+
+<ul>
+<li>adding the error messages to the new form</li>
+</ul>
+
+<pre><code>    &lt;% if @post.errors.any? %&gt;
+      &lt;div id=&quot;errors&quot;&gt;
+        &lt;h2&gt;&lt;%= pluralize(@post.errors.count, &quot;error&quot;) %&gt; stopped this post from saving&lt;/h2&gt;
+        &lt;ul&gt;
+          &lt;% @post.errors.full_messages.each do |msg| %&gt;
+            &lt;li&gt;&lt;%= msg %&gt;&lt;/li&gt;
+          &lt;% end %&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    &lt;% end %&gt;
+</code></pre>
+
+<ul>
+<li>refresh and test it out</li>
+</ul>
+
+<h2 id="40.editanddeletepostfunctionalitycompletecrud">40. edit and delete post functionality (complete CRUD)</h2>
+
+<ul>
+<li>create the form partial</li>
+</ul>
+
+<pre><code>  &lt;%= form_for @post do |f| %&gt;
+    &lt;% if @post.errors.any? %&gt;
+      &lt;div id=&quot;errors&quot;&gt;
+        &lt;h2&gt;&lt;%= pluralize(@post.errors.count, &quot;error&quot;) %&gt; stopped this post from saving&lt;/h2&gt;
+        &lt;ul&gt;
+          &lt;% @post.errors.full_messages.each do |msg| %&gt;
+            &lt;li&gt;&lt;%= msg %&gt;&lt;/li&gt;
+          &lt;% end %&gt;
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    &lt;% end %&gt;
+    &lt;p&gt;
+      &lt;%= f.label :title %&gt; &lt;br&gt;
+      &lt;%= f.text_field :title %&gt;
+    &lt;/p&gt;
+    &lt;p&gt;
+      &lt;%= f.label :body %&gt; &lt;br&gt;
+      &lt;%= f.text_area :body %&gt;
+    &lt;/p&gt;
+    &lt;p&gt;
+      &lt;%= f.submit %&gt;
+    &lt;/p&gt;
+  &lt;% end %&gt;  
+</code></pre>
+
+<ul>
+<li>update the new file</li>
+</ul>
+
+<pre><code>&lt;div id=&quot;page_wrapper&quot;&gt;
+  &lt;h1&gt;Make Something&lt;/h1&gt;
+
+  &lt;%= render 'form' %&gt;
+&lt;/div&gt;
+
+</code></pre>
+
+<ul>
+<li>create the edit file</li>
+</ul>
+
+<pre><code>&lt;div id=&quot;page_wrapper&quot;&gt;
+  &lt;h1&gt;Fix Post&lt;/h1&gt;
+
+  &lt;%= render 'form' %&gt;
+&lt;/div&gt;
+
+</code></pre>
+
+<ul>
+<li>in the show page add the edit link</li>
+</ul>
+
+<pre><code>  &lt;p class=&quot;date&quot;&gt;
+    Submitted &lt;%= time_ago_in_words(@post.created_at) %&gt; ago |
+    &lt;%= link_to 'Edit', edit_post_path(@post) %&gt;
+  &lt;/p&gt;
+</code></pre>
+
+<ul>
+<li>update the update cation</li>
+</ul>
+
+<pre><code>  def update
+    if @post.update(post_params)
+      redirect_to @post
+    else
+      render 'edit'
+    end
+  end
+</code></pre>
+
+<ul>
+<li>in posts controller, update the destroy</li>
+</ul>
+
+<pre><code>  def destroy
+    @post.destroy
+    redirect_to root_path
+  end
+</code></pre>
+
+<ul>
+<li>in show add the delete link</li>
+</ul>
+
+<pre><code>  &lt;p class=&quot;date&quot;&gt;
+    Submitted &lt;%= time_ago_in_words(@post.created_at) %&gt; ago |
+    &lt;%= link_to 'Edit', edit_post_path(@post) %&gt; |
+    &lt;%= link_to 'Delete', post_path(@post), method: :delete, data: { confirm: 'Are you sure?'} %&gt;
+  &lt;/p&gt;
+</code></pre>
+
+<h2 id="41.addcommentstopostspage">41. add comments to posts page</h2>
+
+<ul>
+<li>rails g model Comment name:string body:text post_id:integer</li>
+<li>rails db:migrate</li>
+<li>in comment.rb</li>
+</ul>
+
+<pre><code>belongs_to :post
+</code></pre>
+
+<ul>
+<li>in post.rb</li>
+</ul>
+
+<pre><code>has_many :comments
+</code></pre>
+
+<ul>
+<li>in routes nest the comments with posts</li>
+</ul>
+
+<pre><code>  resources :posts do
+    resources :comments
+  end
+</code></pre>
+
+<ul>
+<li>rails g controller Comments</li>
+<li>in comments controller</li>
+</ul>
+
+<pre><code>class CommentsController &lt; ApplicationController
+  def create
+    @post = Post.find(params[:post_id])
+    @comment = @post.comments.create(comment_params)
+    redirect_to post_path(@post)
+  end
+
+  private
+
+    def comment_params
+      params.require(:comment).permit(:name, :body)
+    end
+end
+</code></pre>
+
+<ul>
+<li>create the comments/_comment.html.erb partial</li>
+</ul>
+
+<pre><code>&lt;div class=&quot;comment clearfix&quot;&gt;
+  &lt;div class=&quot;comment_content&quot;&gt;
+    &lt;p class=&quot;comment_name&quot;&gt;&lt;strong&gt;&lt;%= comment.name %&gt;&lt;/strong&gt;&lt;/p&gt;
+    &lt;p class=&quot;comment_body&quot;&gt;&lt;%= comment.body %&gt;&lt;/p&gt;
+    &lt;p class=&quot;comment_title&quot;&gt;&lt;%= time_ago_in_words(comment.created_at) %&gt; Ago&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<ul>
+<li>create the comments/_form.html.erb</li>
+</ul>
+
+<pre><code>&lt;%= form_for([@post, @post.comments.build]) do |f| %&gt;
+  &lt;p&gt;
+    &lt;%= f.label :name %&gt; &lt;br&gt;
+    &lt;%= f.text_field :name %&gt;
+  &lt;/p&gt;
+  &lt;p&gt;
+    &lt;%= f.label :body %&gt; &lt;br&gt;
+    &lt;%= f.text_area :body %&gt;
+  &lt;/p&gt;
+  &lt;br&gt;
+  &lt;p&gt;
+    &lt;%= f.submit %&gt;
+  &lt;/p&gt;
+&lt;% end %&gt;
+</code></pre>
+
+<ul>
+<li>in the show page, under the body add the comments</li>
+</ul>
+
+<pre><code>  &lt;div id=&quot;comments&quot;&gt;
+    &lt;h2&gt;&lt;%= @post.comments.count %&gt; Comments&lt;/h2&gt;
+    &lt;%= render @post.comments %&gt;
+    &lt;h3&gt;Join Discussion: &lt;/h3&gt;
+    &lt;%= render &quot;comments/form&quot; %&gt;
+  &lt;/div&gt;
+</code></pre>
+
+<h2 id="42.deletefunctionforcommentsand43.commentsandpostdependency">42. delete function for comments and 43. comments and post dependency</h2>
+
+<ul>
+<li>in the comments/comment partial add the delete link</li>
+</ul>
+
+<pre><code>  &lt;p&gt;&lt;%= link_to 'Delete', [comment.post, comment], method: :delete, class: 'button', data: { confirm: 'Are you sure?'} %&gt;&lt;/p&gt;
+</code></pre>
+
+<ul>
+<li>update the comments controller with the destroy, find post and before action</li>
+</ul>
+
+<pre><code>class CommentsController &lt; ApplicationController
+  before_action :find_post, only: [:create, :destroy]
+  def create
+    @comment = @post.comments.create(comment_params)
+    redirect_to post_path(@post)
+  end
+
+  def destroy
+    @comment = @post.comments.find(params[:id])
+    @comment.destroy
+
+    redirect_to post_path(@post)
+  end
+
+  private
+
+    def comment_params
+      params.require(:comment).permit(:name, :body)
+    end
+
+    def find_post
+      @post = Post.find(params[:post_id])
+    end
+end
+</code></pre>
+
+<ul>
+<li>in post.rb update the has many comments</li>
+</ul>
+
+<pre><code>has_many :comments, dependent: :destroy
+</code></pre>
+
+<h2 id="44.staticpage-aboutpage">44. static page - about page</h2>
+
+<ul>
+<li>rails g controller pages</li>
+<li>in routes</li>
+</ul>
+
+<pre><code>get '/about', to: 'pages#about'
+</code></pre>
+
+<ul>
+<li>create the pages/about.html.erb</li>
+<li>in pages controller add the action</li>
+</ul>
+
+<pre><code>  def about
+  end
+</code></pre>
+
+<ul>
+<li>add the code in the about.html</li>
+</ul>
+
+<pre><code>&lt;div id=&quot;page_wrapper&quot;&gt;
+  &lt;div id=&quot;profile_image&quot;&gt;
+    &lt;%= image_tag 'profile.jpeg' %&gt;
+  &lt;/div&gt;
+
+  &lt;div id=&quot;content&quot;&gt;
+    &lt;h1&gt;It's Mr. Stick Figure&lt;/h1&gt;
+    &lt;p&gt;
+      Lorem ipsum dolor amet artisan heirloom beard small batch craft beer leggings pop-up. Whatever hammock iPhone actually single-origin coffee selfies kogi man braid wolf asymmetrical health goth succulents four dollar toast food truck. Distillery gluten-free live-edge fanny pack crucifix, selfies bitters put a bird on it. Tote bag schlitz brooklyn vice, beard you probably haven't heard of them squid hoodie sriracha cray roof party. VHS migas banjo, 8-bit shabby chic single-origin coffee sartorial listicle blue bottle glossier pinterest pug.
+
+      Vexillologist you probably haven't heard of them chambray polaroid schlitz. Kickstarter listicle readymade, literally kombucha glossier neutra skateboard copper mug authentic franzen fam venmo. Dreamcatcher etsy williamsburg truffaut, pop-up bushwick VHS subway tile organic. 90's sriracha typewriter air plant roof party banh mi.
+    &lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+
+<ul>
+<li>in the application layout add the about link</li>
+</ul>
+
+<pre><code>&lt;li&gt;&lt;%= link_to 'About', about_path %&gt;&lt;/li&gt;
+</code></pre>
+
+<ul>
+<li>in the layout/app add the if block under header</li>
+</ul>
+
+<pre><code>    &lt;% if current_page?(root_path) %&gt;
+      &lt;p&gt;Post Feed&lt;/p&gt;
+    &lt;% elsif current_page?(about_path) %&gt;
+      &lt;p&gt;My Site&lt;/p&gt;
+    &lt;% else %&gt;
+      &lt;%= link_to 'Back to Post Feed', root_path %&gt;
+    &lt;% end %&gt;
+</code></pre>
+
+<h2 id="45.adduserstoappand46.userrestrictions">45. add users to app and 46. user restrictions</h2>
+
+<ul>
+<li>add devise gem</li>
+<li>bundle</li>
+<li>rails g devise:install</li>
+<li>do the devise todos</li>
+<li>rails g devise:views</li>
+<li>rails g devise User</li>
+<li>rails db:migrate</li>
+<li>create a new user</li>
+<li>add page wrapper to devise/sessions/new</li>
+<li>in posts controller add the authenticate before action</li>
+</ul>
+
+<pre><code>before_action :authenticate_user!, except: [:index, :show]
+</code></pre>
+
+<ul>
+<li>add page wrapper to devise/registrations new and edit</li>
+<li>in layout/app update the log in and log out buttons</li>
+</ul>
+
+<pre><code>    &lt;% if !user_signed_in? %&gt;
+        &lt;p class=&quot;sign_in&quot;&gt;&lt;%= link_to 'User Login', new_user_session_path %&gt;&lt;/p&gt;
+    &lt;% end %&gt;   
+    &lt;% if user_signed_in? %&gt;        
+      &lt;div class=&quot;buttons&quot;&gt;
+        &lt;button class=&quot;button&quot;&gt;&lt;%= link_to 'Make Post', new_post_path %&gt;&lt;/button&gt;
+        &lt;button class=&quot;button&quot;&gt;&lt;%= link_to 'Sign Out', destroy_user_session_path, method: :delete %&gt;&lt;/button&gt;
+      &lt;/div&gt;
+    &lt;% end %&gt;
+</code></pre>
+
+<ul>
+<li>add if in the show for edit and delete links</li>
+</ul>
+
+<pre><code>    &lt;% if user_signed_in? %&gt;
+      |
+      &lt;%= link_to 'Edit', edit_post_path(@post) %&gt; |
+      &lt;%= link_to 'Delete', post_path(@post), method: :delete, data: { confirm: 'Are you sure?'} %&gt;
+    &lt;% end %&gt;
+</code></pre>
+
+<ul>
+<li>in comments/comment partial update the delete link</li>
+</ul>
+
+<pre><code>  &lt;% if user_signed_in? %&gt;
+    &lt;p&gt;&lt;%= link_to 'Delete', [comment.post, comment], method: :delete, class: 'button', data: { confirm: 'Are you sure?'} %&gt;&lt;/p&gt;
+  &lt;% end %&gt;
+</code></pre>
+
 </body>
 </html>
