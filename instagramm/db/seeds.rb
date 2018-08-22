@@ -1,7 +1,16 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+Pic.destroy_all
+num = 0
+
+10.times do |pic|
+  temp = Pic.create!(
+    title: Faker::Hipster.sentence, 
+    description: Faker::Hipster.paragraph(20), 
+    user_id: rand(1..2)
+  )
+  num = pic.to_s
+  temp.featured_image.attach(
+    io: File.open('/Users/mac/Documents/Sites/allRailsTuts/udemy-rails-8apps/instagramm/app/assets/images/image'+num+'.png'),
+    filename: 'image'+num+'.png'
+  )
+end
+puts '10 pics have been created'

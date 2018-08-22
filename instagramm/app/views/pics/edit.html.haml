@@ -1,0 +1,11 @@
+#edit_page.col-md-8.col-md-offset-2
+  .row
+    .panel.panel-default
+      .panel-heading
+        %h1 Fix Pic!
+      .panel-body
+        - if @pic.featured_image.attached?
+          .current_image
+            %strong.center Right now
+            = image_tag @pic.featured_image        
+        = render 'form'

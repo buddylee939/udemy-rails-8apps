@@ -8,5 +8,99 @@
 
 <h1 id="udemyrails8apps-instagram">Udemy Rails 8 Apps - INSTAGRAM</h1>
 
+<h2 id="49.launchappwithpicsmodelandcontroller">49. launch app with pics model and controller</h2>
+
+<ul>
+<li>rails new instagramm</li>
+<li>install haml, simple form, bootstrap sass,</li>
+<li>bundle</li>
+<li>rails g model Pic title:string description:text</li>
+<li>rails db:migrate</li>
+<li>rails g controller Pics</li>
+<li>in pics controller create the def index action</li>
+<li>create pics/index.html.haml</li>
+<li>in routes</li>
+</ul>
+
+<pre><code>  resources :pics
+  root 'pics#index'
+</code></pre>
+
+<h2 id="50.abilitytocreateposts">50. ability to create posts</h2>
+
+<ul>
+<li>in pics controller</li>
+</ul>
+
+<pre><code>  def new
+    @pic = Pic.new
+  end
+
+  def create
+    @pic = Pic.new(pic_params)
+  end
+
+  private
+
+    def pic_params
+      params.require(:pic).permit(:title, :description)
+    end
+</code></pre>
+
+<ul>
+<li>create the pics/new</li>
+</ul>
+
+<pre><code>%h1 Post Pic
+
+= render 'form'
+
+= link_to 'Back', root_path
+</code></pre>
+
+<ul>
+<li>rails g simple_form:install &#8211;bootstrap</li>
+<li>create the form partial</li>
+</ul>
+
+<pre><code>= simple_form_for @pic, html: { multipart: true } do |f|
+  - if @pic.errors.any?
+    #errors
+      %h2
+      = pluralize(@pic.errors.count, 'error')
+      prevented this Pic from saving
+      %ul
+        - @pic.errors.full_message.each do |msg|
+          %li= msg
+          
+  .form-group
+    = f.input :title, input_html: { class: 'form-control' }
+  .form-group
+    = f.input :description, input_html: { class: 'form-control' }
+
+  = f.button :submit, class: 'btn btn-info'
+</code></pre>
+
+<h2 id="51.displayingposts">51. displaying posts</h2>
+
+<ul>
+<li>update the create action</li>
+</ul>
+
+<pre><code>  def create
+    @pic = Pic.new(pic_params)
+
+    if @pic.save
+      redirect_to @pic, notice: 'Yess! It was posted!'
+    else
+      render 'new'
+    end
+  end
+</code></pre>
+
+<ul>
+<li></li>
+</ul>
+
 </body>
 </html>
